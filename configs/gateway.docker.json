@@ -1,0 +1,21 @@
+{
+    "listen_addr": ":8080",
+    "routes": [
+        {
+            "prefix": "/orders",
+            "upstream": "http://orders:8081"
+        },
+        {
+            "prefix": "/users",
+            "upstream": "http://users:8082"
+        },
+        {
+            "prefix": "/products",
+            "upstream": "http://products:8083"
+        },
+        {
+            "prefix": "/payments",
+            "upstream": "http://payments:8084"
+        }
+    ]
+}

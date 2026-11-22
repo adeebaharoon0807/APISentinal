@@ -1,0 +1,34 @@
+services:
+  gateway:
+    build:
+      context: .
+      args:
+        TARGET: gateway
+    command: ["-config", "/etc/sentinel/gateway.json"]
+    environment:
+      API_SENTINEL_AUTH_MODE: ${API_SENTINEL_AUTH_MODE:-api_key}
+      API_SENTINEL_API_KEY: ${API_SENTINEL_API_KEY:?set API_SENTINEL_API_KEY in .env}
+      API_SENTINEL_JWT_SECRET: ${API_SENTINEL_JWT_SECRET:-}
+      API_SENTINEL_JWT_ISSUER: ${API_SENTINEL_JWT_ISSUER:-}
+    volumes:
+      - ./configs/gateway.docker.json:/etc/sentinel/gateway.json:ro
+    ports:
+      - "8080:8080"
+      - "127.0.0.1:9091:9091"
+    depends_on: [orders, users, products, payments]
+
+  orders:
+    build: { context: ., args: { TARGET: mockservice } }
+    command: ["-name", "orders", "-addr", ":8081", "-owner-check"]
+
+  users:
+    build: { context: ., args: { TARGET: mockservice } }
+    command: ["-name", "users", "-addr", ":8082"]
+
+  products:
+    build: { context: ., args: { TARGET: mockservice } }
+    command: ["-name", "products", "-addr", ":8083"]
+
+  payments:
+    build: { context: ., args: { TARGET: mockservice } }
+    command: ["-name", "payments", "-addr", ":8084", "-delay", "3s"]
